@@ -32,7 +32,7 @@ class FindShortestPathWIthKnightOnChessboardCommand extends Command
         $goalField = $this->createFieldFromChessCoords($goalCoords);
 
         $chessBoard = new ChessBoard();
-        $result = $chessBoard->shortestHorsePath($startField, $goalField);
+        $result = $chessBoard->shortestKnightPath($startField, $goalField);
 
         if (count($result) === 0 ) {
             $output->writeln('There is no path, because the goal is on the same field as start');

@@ -18,7 +18,7 @@ class ChessBoard
         [-1, 2],
     ];
 
-    public function shortestHorsePath(Field $start, Field $goal): array
+    public function shortestKnightPath(Field $start, Field $goal): array
     {
         if (!$this->isFieldOnBoard($start) || !$this->isFieldOnBoard($goal)) {
             throw new LogicException('Start or goal field is not positioned on board.');
