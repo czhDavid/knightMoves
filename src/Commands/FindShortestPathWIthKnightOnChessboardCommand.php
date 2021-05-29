@@ -32,10 +32,13 @@ class FindShortestPathWIthKnightOnChessboardCommand extends Command
         $goalField = $this->createFieldFromChessCoords($goalCoords);
 
         $chessBoard = new ChessBoard();
-        $result = $chessBoard->find($startField, $goalField);
+        $result = $chessBoard->shortestHorsePath($startField, $goalField);
 
-
-        $output->writeln($this->getFieldAsString($result));
+        if (count($result) === 0 ) {
+            $output->writeln('There is no path, because the goal is on the same field as start');
+        } else {
+            $output->writeln('The shortest path is: ' . $this->pathToString($result));
+        }
 
         return Command::SUCCESS;
     }
@@ -53,7 +56,7 @@ class FindShortestPathWIthKnightOnChessboardCommand extends Command
         }
 
         if ($chessPositionY < 1 || $chessPositionY > 8) {
-            throw new InvalidArgumentException(sprintf('Vertical coordination %s is invalid', $chessPositionX));
+            throw new InvalidArgumentException(sprintf('Vertical coordination %s is invalid', $chessPositionY));
         }
 
         return new Field(self::LETTER_TO_INDEX[$chessPositionX], $chessPositionY - 1);
@@ -62,7 +65,7 @@ class FindShortestPathWIthKnightOnChessboardCommand extends Command
     /**
      * @param Field[] $fields
      */
-    private function getFieldAsString(array $fields): string
+    private function pathToString(array $fields): string
     {
         $pathAsString = $this->fieldToChessCoords($fields[0]);
 
@@ -77,6 +80,6 @@ class FindShortestPathWIthKnightOnChessboardCommand extends Command
     {
         $indexToLetter = array_flip(self::LETTER_TO_INDEX);
 
-        return sprintf('%s%d', $indexToLetter[$field->x], $field->y + 1);
+        return sprintf('%s%d', $indexToLetter[$field->getX()], $field->getY() + 1);
     }
 }

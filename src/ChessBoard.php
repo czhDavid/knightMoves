@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-class ChessBoard{
-
-
-    public function __construct(private int $horizontalSize = 8, private int $verticalSize = 8) {}
+class ChessBoard
+{
+    private const HORIZONTAL_SIZE = 8;
+    private const VERTICAL_SIZE = 8;
 
     private const AVAILABLE_KNIGHT_MOVES = [
         [1, 2],
@@ -18,61 +18,66 @@ class ChessBoard{
         [-1, 2],
     ];
 
-    public function find(Field $start, Field $goal): array
+    public function shortestHorsePath(Field $start, Field $goal): array
     {
         if (!$this->isFieldOnBoard($start) || !$this->isFieldOnBoard($goal)) {
+            throw new LogicException('Start or goal field is not positioned on board.');
+        }
+
+        if($this->areFieldEqueal($start, $goal)) {
             return [];
         }
 
-        $visitedCords = [$start];
+        $visitedPositions = [$start];
         $paths[] = [$start];
 
-        while(true) {
-            $foundNewPath = false;
+        while (count($paths) !== 0) {
             foreach ($paths as $key => $path) {
-                $foundNewPathExtension = false;
                 foreach (self::AVAILABLE_KNIGHT_MOVES as $knightMove) {
-                    $newMove = new Field(end($path)->x + $knightMove[0], end($path)->y + $knightMove[1]);
-                    //are we still on board
-                    if (!$this->isFieldOnBoard($newMove)) {
+                    $newPosition = new Field(end($path)->getX() + $knightMove[0], end($path)->getY() + $knightMove[1]);
+
+                    if ($this->areFieldEqueal($newPosition, $goal)) {
+                        return [...$path, $newPosition];
+                    }
+
+                    if (!$this->isFieldOnBoard($newPosition)) {
                         continue;
                     }
 
-                    // did we already visit this cord before? no need to check again
-                    if (in_array($newMove, $visitedCords)) {
+                    if ($this->wasFieldAlreadyVisited($newPosition, $visitedPositions)) {
                         continue;
                     }
 
-                    // found the goal, great job
-                    if ($newMove == $goal) {
-                        return [...$path, $newMove];
-                    }
+                    $paths[] = [...$path, $newPosition];
 
-                    //add new path to list of paths
-                    $paths[] = [...$path, $newMove];
-
-                    $visitedCords[] = $newMove;
-
-                    $foundNewPath = true;
-                    $foundNewPathExtension = true;
+                    $visitedPositions[] = $newPosition;
                 }
 
-                //remove dead paths to speed up the search and don't revisit dead paths
-                if (!$foundNewPathExtension) {
-                    unset($paths[$key]);
-                }
-            }
-
-            //if we did not find a solution and no new path exit;
-            if (!$foundNewPath) {
-                return [];
+                unset($paths[$key]);
             }
         }
+
+        throw new LogicException('Path connecting start and goal does not exist');
     }
 
     private function isFieldOnBoard(Field $field): bool
     {
-        return $field->x <= $this->horizontalSize && $field->y <= $this->verticalSize;
+        return $field->getX() < self::HORIZONTAL_SIZE && $field->getY() < self::VERTICAL_SIZE && $field->getX() >= 0 && $field->getY() >= 0;
+    }
+
+    private function areFieldEqueal(Field $a, Field $b): bool
+    {
+        return $a->getX() === $b->getX() && $a->getY() === $b->getY();
+    }
+
+    private function wasFieldAlreadyVisited(Field $field, array $visitedFields): bool
+    {
+        foreach ($visitedFields as $visitedField) {
+            if ($this->areFieldEqueal($field, $visitedField)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
-

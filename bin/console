@@ -8,15 +8,6 @@ use Symfony\Component\Console\Application;
 use Commands\FindShortestPathWIthKnightOnChessboardCommand;
 
 $application = new Application();
-
 $application->add(new FindShortestPathWIthKnightOnChessboardCommand());
 
 $application->run();
-
-//
-//$chessBoard = new ChessBoard();
-//
-//$shortestPath = $chessBoard->find(new Field(0, 0), new Field(8, 8));
-//
-//var_dump($shortestPath);
-
