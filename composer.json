@@ -1,0 +1,11 @@
+{
+    "name": "chodurd/knight-moves",
+    "require": {
+        "symfony/console": "^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "" : "src/"
+        }
+    }
+}
